@@ -15,9 +15,11 @@
         }
 
         body {
+            font-family: 'Inter', sans-serif;
             background: #f3f4f6;
             min-height: 100vh;
-            overflow-y: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
         }
 
         /* NAVBAR */
@@ -283,14 +285,30 @@
 
             .left {
                 text-align: center;
+                padding: 15px;
+            }
+
+            .title {
+                font-size: 42px;
+            }
+
+            .subtitle {
+                font-size: 15px;
             }
 
             .desc {
                 margin: 0 auto;
+                font-size: 13px;
             }
 
             .info-box {
                 justify-content: center;
+                gap: 10px;
+            }
+
+            .card {
+                width: 160px;
+                padding: 12px;
             }
 
             .right {
@@ -305,6 +323,102 @@
 
             .candidate-card, .schedule-card {
                 width: 100%;
+            }
+        }
+
+        /* Mobile - Small Phones */
+        @media (max-width: 480px) {
+            .navbar {
+                height: 60px;
+                padding: 0 15px;
+            }
+
+            .logo-small {
+                height: 32px;
+            }
+
+            .logo-main {
+                height: 34px;
+            }
+
+            .container {
+                padding: 15px;
+                margin-top: 10px;
+            }
+
+            .left {
+                padding: 10px;
+            }
+
+            .badge {
+                font-size: 10px;
+                padding: 5px 10px;
+            }
+
+            .title {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .desc {
+                font-size: 12px;
+                line-height: 1.6;
+            }
+
+            .info-box {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                margin-top: 20px;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 280px;
+                padding: 12px;
+            }
+
+            .card h4 {
+                font-size: 14px;
+            }
+
+            .right {
+                margin-top: 20px;
+            }
+
+            .form-box {
+                padding: 24px 20px;
+                border-radius: 12px;
+            }
+
+            .form-box h2 {
+                font-size: 24px;
+            }
+
+            .form-box p {
+                font-size: 12px;
+            }
+
+            .input label {
+                font-size: 10px;
+            }
+
+            .input input,
+            .input-wrap input {
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .error {
+                font-size: 11px;
+                padding: 8px 10px;
             }
         }
     </style>
