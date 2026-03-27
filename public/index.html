@@ -3,104 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anubhuti II - Login</title>
+    <title>Anubhuti II - Examination Portal</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Inter:wght@300;400;500;600&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f3f4f6;
             min-height: 100vh;
+            overflow-y: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            height: 70px;
+            background: #d1d5db;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 0 40px;
+            flex-shrink: 0;
         }
 
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .logo-small {
+            height: 40px;
+        }
+
+        .logo-main {
+            height: 42px;
+        }
+
+        /* MAIN LAYOUT */
         .container {
-            background: white;
+            display: flex;
+            padding: 45px 40px;
+            gap: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        /* LEFT SIDE */
+        .left {
+            flex: 1;
+            padding: 15px 20px;
+        }
+
+        .badge {
+            background: #dc2626;
+            color: white;
+            padding: 6px 14px;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 450px;
-            width: 100%;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
-            color: #667eea;
-            font-size: 32px;
-            margin-bottom: 5px;
-        }
-
-        .logo p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #333;
+            font-size: 12px;
             font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 56px;
+            color: #0b1b3b;
+            line-height: 1.1;
             margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #c53030;
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .desc {
+            color: #4b5563;
+            max-width: 500px;
+            line-height: 1.7;
             font-size: 14px;
         }
 
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+        /* INFO BOXES */
+        .info-box {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .card {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 10px;
+            width: 180px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card p {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card h4 {
+            margin-top: 8px;
+            color: #111827;
             font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* RIGHT SIDE */
+        .right {
+            width: 400px;
+            margin-top: -30px;
+        }
+
+        .form-box {
+            background: #ffffff;
+            padding: 32px 28px;
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            border: 1px solid #e5e7eb;
+        }
+
+        /* FORM STYLES */
+        .form-box h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #0b1b3b;
+        }
+
+        .form-box p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .input {
+            margin-bottom: 20px;
+        }
+
+        .input label {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .input input {
+            width: 100%;
+            padding: 12px 0;
+            font-size: 15px;
+            background: transparent;
             transition: all 0.3s;
         }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            border-bottom: 1.8px solid #cbd5e1;
+            padding: 8px 0;
+            transition: all 0.3s;
         }
 
+        .input-wrap .icon {
+            margin-right: 10px;
+            font-size: 15px;
+            opacity: 0.7;
+        }
+
+        .input-wrap input {
+            border: none;
+            outline: none;
+            flex: 1;
+            background: transparent;
+            font-size: 15px;
+        }
+
+        .input-wrap input:focus {
+            outline: none;
+        }
+
+        /* ✅ Focus state - single border */
+        .input-wrap:focus-within {
+            border-bottom: 2px solid #0b1b3b;
+        }
+
+        .help-text {
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .forgot {
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .assist {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* ERROR MESSAGE */
+        .error {
+            display: none;
+            background: #fde8e8;
+            color: #b91c1c;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            margin: 10px 0 14px;
+            border: 1px solid #fca5a5;
+        }
+
+        .input.error-active .input-wrap {
+            border-bottom: 2px solid #dc2626 !important;
+        }
+
+        /* BUTTON */
         .btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0b1b3b;
             color: white;
-            border: none;
+            padding: 16px;
             border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border: none;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-top: 10px;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(11, 27, 59, 0.2);
         }
 
         .btn:active {
@@ -110,189 +268,139 @@
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-            border-left: 4px solid #c33;
-        }
-
-        .success-section {
-            text-align: center;
-            display: none;
-        }
-
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 20px;
-            animation: scaleIn 0.5s ease-out;
-        }
-
-        @keyframes scaleIn {
-            from {
-                transform: scale(0);
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .navbar {
+                padding: 0 20px;
             }
-            to {
-                transform: scale(1);
+
+            .container {
+                flex-direction: column;
+                padding: 20px;
             }
-        }
 
-        .success-section h2 {
-            color: #333;
-            margin-bottom: 10px;
-        }
+            .left {
+                text-align: center;
+            }
 
-        .success-section p {
-            color: #666;
-            margin-bottom: 25px;
-        }
+            .desc {
+                margin: 0 auto;
+            }
 
-        .download-btn {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            margin-bottom: 15px;
-        }
+            .info-box {
+                justify-content: center;
+            }
 
-        .download-btn:hover {
-            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
-        }
+            .right {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+            }
 
-        .user-info {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: left;
-        }
+            .success-content {
+                flex-direction: column;
+            }
 
-        .user-info p {
-            margin: 5px 0;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .user-info strong {
-            color: #333;
-        }
-
-        .back-btn {
-            background: #f0f0f0;
-            color: #666;
-        }
-
-        .back-btn:hover {
-            background: #e0e0e0;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
+            .candidate-card, .schedule-card {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo-wrap">
+            <img src="logos-40-years.png" alt="40 Years Logo" class="logo-small">
+            <img src="Logo.png" alt="Sriram IAS Logo" class="logo-main">
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
     <div class="container">
-        <!-- Login Form -->
-        <div id="loginForm">
-            <div class="logo">
-                <h1>ANUBHUTI II</h1>
-                <p>Examination Portal</p>
+        <!-- LEFT SIDE -->
+        <div class="left">
+            <span class="badge">EXAMINATION PORTAL</span>
+            <h1 class="title">ANUBHUTI II</h1>
+            <p class="subtitle">All India Open Mock Test 2024</p>
+
+            <p class="desc">
+                Welcome to the official verification gateway. To secure your participation in the nation's most prestigious mock assessment, please verify your enrollment details below to download your e-Admit Card.
+            </p>
+
+            <div class="info-box">
+                <div class="card">
+                    <p>Examination Date</p>
+                    <h4>May 12, 2024</h4>
+                </div>
+                <div class="card">
+                    <p>Status</p>
+                    <h4>Verification Open</h4>
+                </div>
             </div>
-
-            <div class="error-message" id="errorMessage"></div>
-
-            <form id="loginFormElement">
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input 
-                        type="tel" 
-                        id="phone" 
-                        name="phone" 
-                        placeholder="Enter your phone number"
-                        required
-                        pattern="[0-9]{10}"
-                        title="Please enter a valid 10-digit phone number"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        placeholder="Enter your email address"
-                        required
-                    >
-                </div>
-
-                <button type="submit" class="btn" id="loginBtn">
-                    Login
-                </button>
-            </form>
         </div>
 
-        <!-- Success Section with Download Button -->
-        <div class="success-section" id="successSection">
-            <div class="success-icon">✓</div>
-            <h2>Login Successful!</h2>
-            <p id="welcomeMessage">Welcome!</p>
+        <!-- RIGHT SIDE -->
+        <div class="right">
+            <!-- LOGIN FORM -->
+            <div class="form-box" id="formBox">
+                <h2>Verification</h2>
+                <p>Enter the credentials registered during your enrollment for the examination.</p>
 
-            <div class="user-info" id="userInfo">
-                <!-- User info will be populated here -->
+                <form id="loginFormElement">
+                    <div class="input">
+                        <label>Mobile Number</label>
+                        <div class="input-wrap">
+                            <span class="icon">📱</span>
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                placeholder="Registered 10-digit Number"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input">
+                        <label>Email ID</label>
+                        <div class="input-wrap">
+                            <span class="icon">✉️</span>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                placeholder="official@example.com"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="error" id="errorBox">
+                        Invalid credentials. Please check your Mobile Number or Email ID and try again.
+                    </div>
+
+                    <button type="submit" class="btn" id="loginBtn">
+                        Generate Admit Card →
+                    </button>
+
+                    <div class="help-text">
+                        <p class="assist">🎧 Need Technical Assistance?</p>
+                    </div>
+                </form>
             </div>
 
-            <button class="btn download-btn" id="downloadBtn">
-                📥 Download Admit Card
-            </button>
-
-            <button class="btn back-btn" onclick="location.reload()">
-                ← Back to Login
-            </button>
+            <!-- SUCCESS SCREEN REMOVED - NOW IN success.html -->
         </div>
     </div>
 
     <script>
-        // Update this to your Render production URL after deployment
         const API_BASE_URL = 'https://sriram-ias.onrender.com';
         
-        const loginForm = document.getElementById('loginForm');
-        const successSection = document.getElementById('successSection');
         const loginFormElement = document.getElementById('loginFormElement');
-        const errorMessage = document.getElementById('errorMessage');
+        const formBox = document.getElementById('formBox');
+        const errorBox = document.getElementById('errorBox');
         const loginBtn = document.getElementById('loginBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const userInfo = document.getElementById('userInfo');
-        const welcomeMessage = document.getElementById('welcomeMessage');
-
-        let currentUser = null;
 
         // Handle login form submission
         loginFormElement.addEventListener('submit', async (e) => {
@@ -303,37 +411,40 @@
 
             // Validate inputs
             if (!phone || !email) {
-                showError('Please enter both phone number and email');
+                showError();
                 return;
             }
 
-            // Show loading state
+            // Show loading state immediately
             setLoading(true);
-            hideError();
 
             try {
+                // Add timeout for faster perceived response
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(), 5000);
+
                 // Verify credentials with backend
                 const response = await fetch(`${API_BASE_URL}/auth/verify-login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ phone, email })
+                    body: JSON.stringify({ phone, email }),
+                    signal: controller.signal
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Login successful
-                    currentUser = data.user;
-                    showSuccess(data);
+                    // Login successful - redirect to success page
+                    window.location.href = `success.html?email=${encodeURIComponent(email)}`;
                 } else {
-                    // Login failed
-                    showError(data.message || 'Login failed. Please check your credentials.');
+                    // Login failed - ALWAYS show exact error message
+                    showError();
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showError('Network error. Please make sure the server is running.');
+                showError();
             } finally {
                 setLoading(false);
             }
@@ -341,30 +452,21 @@
 
         // Handle download button click
         downloadBtn.addEventListener('click', () => {
-            if (currentUser && currentUser.email) {
-                // Open admit card download URL
-                window.open(`${API_BASE_URL}/admit/download?email=${encodeURIComponent(currentUser.email)}`, '_blank');
+            const email = document.getElementById('email').value;
+            if (email) {
+                window.open(`${API_BASE_URL}/admit/download?email=${encodeURIComponent(email)}`, '_blank');
             }
         });
 
-        // Show success section
-        function showSuccess(data) {
-            loginForm.style.display = 'none';
-            successSection.style.display = 'block';
-
-            welcomeMessage.textContent = `Welcome, ${data.user.name}!`;
+        // Show error message (always exact text)
+        function showError() {
+            errorBox.textContent = 'Invalid credentials. Please check your Mobile Number or Email ID and try again.';
+            errorBox.style.display = 'block';
             
-            userInfo.innerHTML = `
-                <p><strong>Name:</strong> ${data.user.name}</p>
-                <p><strong>Email:</strong> ${data.user.email}</p>
-                <p><strong>Phone:</strong> ${data.user.phone}</p>
-            `;
-        }
-
-        // Show error message
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
+            // Add red border to inputs
+            document.querySelectorAll('.input').forEach(el => {
+                el.classList.add('error-active');
+            });
             
             // Auto-hide after 5 seconds
             setTimeout(() => {
@@ -374,17 +476,22 @@
 
         // Hide error message
         function hideError() {
-            errorMessage.style.display = 'none';
+            errorBox.style.display = 'none';
+            
+            // Remove red border from inputs
+            document.querySelectorAll('.input').forEach(el => {
+                el.classList.remove('error-active');
+            });
         }
 
         // Set loading state
         function setLoading(isLoading) {
             if (isLoading) {
                 loginBtn.disabled = true;
-                loginBtn.innerHTML = '<span class="loading"></span>Verifying...';
+                loginBtn.innerHTML = 'Verifying... ⏳';
             } else {
                 loginBtn.disabled = false;
-                loginBtn.textContent = 'Login';
+                loginBtn.innerHTML = 'Generate Admit Card →';
             }
         }
     </script>

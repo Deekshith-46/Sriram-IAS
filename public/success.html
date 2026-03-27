@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity Verified - Examination Portal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            height: 70px;
+            background: #d1d5db;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            flex-shrink: 0;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logo-small {
+            height: 40px;
+        }
+
+        .logo-main {
+            height: 42px;
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 40px;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .icon {
+            background: #0b1b3b;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: auto;
+        }
+
+        .header h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 36px;
+            color: #0b1b3b;
+            margin-top: 15px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        /* CONTENT */
+        .content {
+            display: flex;
+            gap: 30px;
+        }
+
+        /* CARDS */
+        .card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            flex: 1;
+            border: 1px solid #e5e7eb;
+        }
+
+        .candidate-card {
+            border-left: 4px solid #dc2626;
+        }
+
+        .section-title {
+            font-size: 12px;
+            color: #dc2626;
+            font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .student-name {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 24px;
+            color: #0b1b3b;
+            margin-top: 5px;
+        }
+
+        .download-btn {
+            margin-top: 25px;
+            width: 100%;
+            background: #0b1b3b;
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(11, 27, 59, 0.2);
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+            padding: 8px 0;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        td {
+            padding: 10px 0;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        /* INSTRUCTION BOX */
+        .instruction-box {
+            background: #fde8e8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 12.5px;
+            color: #b91c1c;
+            line-height: 1.6;
+        }
+
+        .instruction-box strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .content {
+                flex-direction: column;
+            }
+
+            .card {
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo-wrap">
+            <img src="logos-40-years.png" alt="40 Years Logo" class="logo-small">
+            <img src="Logo.png" alt="Sriram IAS Logo" class="logo-main">
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <div class="icon">✔</div>
+            <h1>Identity Verified</h1>
+            <p>
+                Your details have been successfully matched with our records. 
+                Your e-Admit Card for the upcoming examination is now ready for download.
+            </p>
+        </div>
+
+        <!-- CONTENT CARDS -->
+        <div class="content">
+            
+            <!-- LEFT CARD - CANDIDATE DETAILS -->
+            <div class="card candidate-card">
+                <p class="section-title">CANDIDATE DETAILS</p>
+
+                <p class="label">STUDENT NAME</p>
+                <div class="student-name" id="studentName">ANUBHUTI II</div>
+
+                <p class="label">MOBILE NUMBER</p>
+                <p id="studentPhone" style="font-size: 16px; color: #111827; margin-top: 5px;">Loading...</p>
+
+                <button class="download-btn" id="downloadBtn">
+                    ⬇ Download e-Admit Card (PDF)
+                </button>
+            </div>
+
+            <!-- RIGHT CARD - EXAM SCHEDULE -->
+            <div class="card schedule-card">
+                <p class="section-title">EXAM SCHEDULE PREVIEW</p>
+
+                <table>
+                    <tr>
+                        <th>PAPER</th>
+                        <th>SUBJECT</th>
+                        <th>TIMINGS</th>
+                    </tr>
+                    <tr>
+                        <td>Paper I</td>
+                        <td>General Studies</td>
+                        <td>09:30 AM - 11:30 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Paper II</td>
+                        <td>CSAT</td>
+                        <td>02:30 PM - 04:30 PM</td>
+                    </tr>
+                </table>
+
+                <div class="instruction-box">
+                    <strong>Important Instructions</strong>
+                    <p>
+                        Please bring a printed copy of this e-Admit Card along with a valid Photo Identity Proof. 
+                        Reach the venue 60 minutes prior to commencement.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://sriram-ias.onrender.com';
+        
+        // Get email from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+
+        console.log("EMAIL:", email); // Debug log
+
+        const studentNameEl = document.getElementById('studentName');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // Fetch user data and populate the page
+        async function fetchUser() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/users`);
+                const users = await response.json();
+
+                console.log("📊 USERS DATA:", users);
+
+                // Find logged-in user by email
+                const user = users.data?.find(u => u.email === email);
+
+                if (!user) {
+                    alert("User not found. Please login again.");
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                console.log("✅ USER FOUND:", user);
+
+                // Fill user details
+                studentNameEl.textContent = user.name || 'ANUBHUTI II';
+                
+                // Display phone number
+                const phoneEl = document.getElementById('studentPhone');
+                if (phoneEl) {
+                    phoneEl.textContent = user.phone || 'Not available';
+                }
+
+                // Update schedule if available
+                if (user.gsPaperSlot) {
+                    console.log("📝 RAW SLOT DATA:", user.gsPaperSlot);
+                    updateSchedule(user.gsPaperSlot);
+                } else {
+                    console.log("⚠️ No schedule data available");
+                }
+
+            } catch (error) {
+                console.error('Error fetching user:', error);
+                // Show default name on error
+                studentNameEl.textContent = 'ANUBHUTI II';
+                const phoneEl = document.getElementById('studentPhone');
+                if (phoneEl) {
+                    phoneEl.textContent = 'Not available';
+                }
+            }
+        }
+
+        // Parse and update exam schedule
+        function updateSchedule(slot) {
+            console.log("🕒 Parsing slot:", slot);
+            
+            const rows = document.querySelectorAll("table tr");
+            
+            if (rows.length < 3) {
+                console.error("❌ Table rows not found");
+                return;
+            }
+
+            // Split into GS and CSAT parts
+            const parts = slot.split(',');
+
+            if (parts.length >= 2) {
+                // 🔥 Clean and extract timings (matching PDF logic)
+                let gsPart = parts[0];
+                let csatPart = parts[1];
+
+                // Remove "Slot X :" prefix
+                gsPart = gsPart.split(':').slice(1).join(':').trim();
+                
+                // Remove subject names
+                gsPart = gsPart.replace('(General Studies)', '').trim();
+                csatPart = csatPart.replace('(CSAT)', '').trim();
+
+                // Format timings (handle AM/PM)
+                const gsTime = formatTiming(gsPart);
+                const csatTime = formatTiming(csatPart);
+
+                console.log("✅ GS Time:", gsTime);
+                console.log("✅ CSAT Time:", csatTime);
+
+                // Apply to table
+                rows[1].children[2].textContent = gsTime;
+                rows[2].children[2].textContent = csatTime;
+            } else {
+                console.error("❌ Invalid slot format - expected 2 parts");
+            }
+        }
+
+        // Helper function to format timing (add missing AM/PM)
+        function formatTiming(time) {
+            if (!time || time === "N/A") return "N/A";
+
+            const parts = time.split('-');
+            
+            if (parts.length !== 2) return time;
+
+            let start = parts[0].trim();
+            let end = parts[1].trim();
+
+            // Check if end already has AM/PM
+            if (!/AM|PM/i.test(end)) {
+                if (/PM/i.test(start)) {
+                    end += " PM";
+                } else if (/AM/i.test(start)) {
+                    end += " AM";
+                }
+            }
+
+            return `${start} - ${end}`;
+        }
+
+        // Initialize page
+        fetchUser();
+
+        // Handle download button click
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            if (email) {
+                window.open(`${API_BASE_URL}/admit/download?email=${encodeURIComponent(email)}`, '_blank');
+            } else {
+                alert('Email not found. Please login again.');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
