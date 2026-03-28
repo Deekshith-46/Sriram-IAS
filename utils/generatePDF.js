@@ -4,6 +4,13 @@ const path = require('path');
 
 exports.generateAdmitCard = (user, res) => {
   try {
+    // 🔍 HELPER FUNCTION: Clean empty/null/whitespace values
+    const clean = (val) => {
+      if (!val) return null;
+      if (typeof val === "string" && val.trim() === "") return null;
+      return val;
+    };
+    
     const doc = new PDFDocument({
       size: "A4",
       margins: { top: 40, bottom: 50, left: 50, right: 50 }
@@ -53,95 +60,79 @@ exports.generateAdmitCard = (user, res) => {
     // ================= PERSONAL DETAILS TABLE =================
     const tableX = 80;
     let tableY = doc.y;
-    const rowHeight = 25;
 
     const drawRow = (label, value) => {
-      // Draw borders
-      doc.rect(tableX, tableY, 200, rowHeight).stroke();
-      doc.rect(tableX + 200, tableY, 250, rowHeight).stroke();
+      const labelWidth = 200;
+      const valueWidth = 250;
+
+      // 🔥 Calculate dynamic height based on content
+      const labelHeight = doc.heightOfString(label, { width: labelWidth - 20 });
+      const valueHeight = doc.heightOfString(value || "", { width: valueWidth - 20 });
+
+      const dynamicHeight = Math.max(labelHeight, valueHeight) + 14;
+
+      // Draw borders with dynamic height
+      doc.rect(tableX, tableY, labelWidth, dynamicHeight).stroke();
+      doc.rect(tableX + labelWidth, tableY, valueWidth, dynamicHeight).stroke();
 
       // Draw label
       doc
         .fontSize(12)
         .fillColor("#4A6FB5")
-        .text(label, tableX + 10, tableY + 7, { width: 180 });
+        .text(label, tableX + 10, tableY + 7, {
+          width: labelWidth - 20
+        });
 
-      // Draw value
+      // Draw value (MULTILINE SUPPORT ✅)
       doc
         .fillColor("black")
-        .text(value || "", tableX + 210, tableY + 7, { width: 230 });
+        .text(value || "", tableX + labelWidth + 10, tableY + 7, {
+          width: valueWidth - 20
+        });
 
-      tableY += rowHeight;
+      // Move Y correctly
+      tableY += dynamicHeight;
     };
 
     drawRow("Name", user.name);
     drawRow("Mobile No.", user.phone);
-    drawRow("Venue of Examination", `${user.city} (${user.preferredMode})`);
+    
+    // 🔍 CRITICAL FIX: Clean values properly (handle empty strings, spaces)
+    const venue = clean(user.venue) || clean(user.Venue) || "N/A";
+    drawRow("Venue of Examination", venue);
 
     doc.moveDown(2);
 
     // ================= EXAM TIMING TABLE =================
-    // Parse dynamic timings (FINAL FIX)
-    let gsTiming = "N/A";
-    let csatTiming = "N/A";
+    // 🔍 CRITICAL FIX: Clean values before using
+    // Handle field name variations + clean empty strings
+    let gsTiming = clean(user.gsSlot) || clean(user.gs_slot) || clean(user.GSSlot) || clean(user.gsslot);
+    let csatTiming = clean(user.csat) || clean(user.CSAT) || clean(user.csatSlot) || clean(user.csat_slot);
 
-    // Helper function to format timing (add missing AM/PM)
-    const formatTiming = (time) => {
+    // Format: "to" → "-"
+    const format = (time) => {
       if (!time || time === "N/A") return "N/A";
-
-      const parts = time.split("-");
-
-      if (parts.length !== 2) return time;
-
-      let start = parts[0].trim();
-      let end = parts[1].trim();
-
-      // Check if end already has AM/PM
-      if (!/AM|PM/i.test(end)) {
-        if (/PM/i.test(start)) {
-          end += " PM";
-        } else if (/AM/i.test(start)) {
-          end += " AM";
-        }
-      }
-
-      return `${start} - ${end}`;
+      return time.replace(/\s*to\s*/i, " - ");
     };
 
-    if (user.gsPaperSlot) {
-      const parts = user.gsPaperSlot.split(",");
-
-      // ===== Paper I =====
-      if (parts[0]) {
-        let gsPart = parts[0];
-
-        // Remove "Slot X:"
-        gsPart = gsPart.split(":").slice(1).join(":");
-
-        // Remove text
-        gsPart = gsPart.replace("(General Studies)", "").trim();
-
-        gsTiming = formatTiming(gsPart);
-      }
-
-      // ===== Paper II =====
-      if (parts[1]) {
-        let csatPart = parts[1];
-
-        csatPart = csatPart.replace("(CSAT)", "").trim();
-
-        csatTiming = formatTiming(csatPart);
-      }
-    }
+    // Apply default ONLY after cleaning
+    gsTiming = gsTiming ? format(gsTiming) : "N/A";
+    csatTiming = csatTiming ? format(csatTiming) : "N/A";
 
     let examX = 100;  // Adjusted for better alignment with top table
     let examY = doc.y;
     const colWidth = 200;
 
     const drawExamRow = (col1, col2, isHeader = false) => {
+      // 🔥 Calculate dynamic height based on content
+      const col1Height = doc.heightOfString(col1, { width: colWidth - 20 });
+      const col2Height = doc.heightOfString(col2, { width: colWidth - 20 });
+      
+      const dynamicHeight = Math.max(col1Height, col2Height) + 14;
+      
       // Draw borders
-      doc.rect(examX, examY, colWidth, rowHeight).stroke();
-      doc.rect(examX + colWidth, examY, colWidth, rowHeight).stroke();
+      doc.rect(examX, examY, colWidth, dynamicHeight).stroke();
+      doc.rect(examX + colWidth, examY, colWidth, dynamicHeight).stroke();
 
       // Draw text
       if (isHeader) {
@@ -153,7 +144,7 @@ exports.generateAdmitCard = (user, res) => {
       doc.text(col1, examX + 10, examY + 7, { width: colWidth - 20 });
       doc.text(col2, examX + colWidth + 10, examY + 7, { width: colWidth - 20 });
 
-      examY += rowHeight;
+      examY += dynamicHeight;
     };
 
     // Header row
@@ -216,7 +207,6 @@ exports.generateAdmitCard = (user, res) => {
     doc.end();
 
   } catch (error) {
-    console.error("PDF generation error:", error);
     res.status(500).json({
       message: "Error generating admit card",
       error: error.message

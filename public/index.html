@@ -59,7 +59,7 @@
         /* LEFT SIDE */
         .left {
             flex: 1;
-            padding: 15px 20px;
+            padding: 8% 20px 15px 20px; /* More top padding to push content down */
         }
 
         .badge {
@@ -436,13 +436,12 @@
     <div class="container">
         <!-- LEFT SIDE -->
         <div class="left">
-            <span class="badge">EXAMINATION PORTAL</span>
             <h1 class="title">ANUBHUTI II</h1>
-            <p class="subtitle">All India Open Mock Test 2024</p>
+            <p class="subtitle">All India Open Mock Test 2026</p>
 
-            <p class="desc">
+            <!-- <p class="desc">
                 Welcome to the official verification gateway. To secure your participation in the nation's most prestigious mock assessment, please verify your enrollment details below to download your e-Admit Card.
-            </p>
+            </p> -->
 
             <div class="info-box">
                 <div class="card">
@@ -460,7 +459,8 @@
         <div class="right">
             <!-- LOGIN FORM -->
             <div class="form-box" id="formBox">
-                <h2>Verification</h2>
+                <!-- <h2>Verification</h2> -->
+                 <h2>FEE – INR 0 (FREE) </h2>
                 <p>Enter the credentials registered during your enrollment for the examination.</p>
 
                 <form id="loginFormElement">
@@ -499,7 +499,7 @@
                     </button>
 
                     <div class="help-text">
-                        <p class="assist">🎧 Need Technical Assistance?</p>
+                        <p class="assist">🎧 For any Assistance call 9811489560</p>
                     </div>
                 </form>
             </div>
@@ -509,7 +509,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'https://sriram-ias.onrender.com';
+        const API_BASE_URL = 'https://sriram-ias.onrender.com' || "http://localhost:5000";
         
         const loginFormElement = document.getElementById('loginFormElement');
         const formBox = document.getElementById('formBox');

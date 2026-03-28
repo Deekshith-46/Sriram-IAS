@@ -10,39 +10,65 @@ exports.uploadExcel = async (req, res) => {
     }
 
     const workbook = xlsx.readFile(file.path);
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-
-    // 🔥 VERY IMPORTANT FIX
-    // raw: false → automatically converts Excel dates to readable format
-    const data = xlsx.utils.sheet_to_json(sheet, {
-      defval: "",   // prevent undefined
-      raw: false    // convert Excel date automatically
+    
+    // 🔥 READ ALL SHEETS (NOT JUST FIRST ONE)
+    let allData = [];
+    
+    workbook.SheetNames.forEach((sheetName) => {
+      const sheet = workbook.Sheets[sheetName];
+      
+      const data = xlsx.utils.sheet_to_json(sheet, {
+        defval: "",   // prevent undefined
+        raw: false,   // convert Excel date automatically
+        range: 0      // 🔥 FORCE FULL SHEET READ (fixes 500 row limit)
+      });
+      
+      // Add sheet info to each row (VERY IMPORTANT)
+      const enrichedData = data.map(row => ({
+        ...row,
+        sheetName // store sheet name like "PUNE SLOT 1"
+      }));
+      
+      allData.push(...enrichedData);
     });
 
-    console.log("✅ Excel Data Received:", JSON.stringify(data, null, 2));
-    console.log("📊 RAW Column Names (before trim):", Object.keys(data[0] || {}));
-
-    const users = data.map((row) => {
-      const normalizeKey = (key) => key.toLowerCase().replace(/[\s-_]/g, "");
+    const users = allData.map((row) => {
+      // 🔥 STRONGER NORMALIZATION - removes EVERYTHING except letters & numbers
+      const normalizeKey = (key) =>
+        key
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, ""); // Remove all special chars, spaces, brackets, etc.
       
       const cleanRow = {};
       Object.keys(row).forEach((key) => {
-        cleanRow[normalizeKey(key)] = row[key];
+        const normalized = normalizeKey(key);
+        cleanRow[normalized] = row[key];
       });
 
       return {
         name: (cleanRow["name"] || "").trim(),
         phone: String(cleanRow["phonenumber"] || "").trim(),
         email: (cleanRow["emailid"] || "").toLowerCase().trim(),
-        preferredMode: (cleanRow["preferredmode"] || "").trim(),
         city: (cleanRow["city"] || "").trim(),
         
-        // ✅ FIXED timestamp - handles both numbers and strings
-        timestamp: typeof cleanRow["timestamp"] === "number"
-          ? new Date((cleanRow["timestamp"] - 25569) * 86400 * 1000).toLocaleString()
-          : cleanRow["timestamp"] || "",
+        // 🆕 NEW FIELDS - Multi-sheet support
+        venue: (cleanRow["venue"] || "").trim(),
         
-        gsPaperSlot: (cleanRow["gspaperislot"] || "").trim()
+        // ✅ Handle multiple possible field names
+        gsSlot: (
+          cleanRow["generalstudiesslot"] ||
+          cleanRow["gsslot"] ||
+          cleanRow["gspaperislot"] ||
+          ""
+        ).trim(),
+        
+        csat: (
+          cleanRow["csat"] ||
+          cleanRow["csatslot"] ||
+          ""
+        ).trim(),
+        
+        examSheet: (cleanRow["sheetname"] || "").trim()
       };
     });
 
@@ -61,13 +87,14 @@ exports.uploadExcel = async (req, res) => {
 
     res.json({
       message: "Upload processed SUPER FAST 🚀",
-      total: users.length,
+      totalSheets: workbook.SheetNames.length,
+      sheetsProcessed: workbook.SheetNames,
+      totalRows: allData.length,
       inserted: result.upsertedCount,
       updated: result.modifiedCount
     });
 
   } catch (err) {
-    console.error("❌ Upload error:", err);
     res.status(500).json({ 
       message: "Upload failed", 
       error: err.message 
@@ -85,7 +112,6 @@ exports.getAllUsers = async (req, res) => {
       data: users
     });
   } catch (error) {
-    console.error("Error fetching all users:", error);
     res.status(500).json({ 
       success: false,
       message: "Failed to fetch users", 
@@ -112,7 +138,6 @@ exports.searchUsers = async (req, res) => {
 
     res.json(users);
   } catch (error) {
-    console.error("Search error:", error);
     res.status(500).json({ message: "Error searching users", error: error.message });
   }
 };

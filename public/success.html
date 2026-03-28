@@ -171,12 +171,24 @@
             color: #111827;
         }
 
+        /* Loading state for timing cells */
+        .loading-timing {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        /* Add bottom border to last table row */
+        tr:last-child td {
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
         /* INSTRUCTION BOX */
         .instruction-box {
             background: #fde8e8;
             padding: 15px;
             border-radius: 6px;
-            margin-top: 20px;
+            margin-top: 25px;
             font-size: 12.5px;
             color: #b91c1c;
             line-height: 1.6;
@@ -184,8 +196,23 @@
 
         .instruction-box strong {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             font-size: 13px;
+        }
+
+        .instruction-box .instructions-list p {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .instruction-box .instructions-list p::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #b91c1c;
+            font-weight: bold;
+            font-size: 14px;
         }
 
         /* RESPONSIVE */
@@ -373,21 +400,21 @@
                     <tr>
                         <td>Paper I</td>
                         <td>General Studies</td>
-                        <td>09:30 AM - 11:30 AM</td>
+                        <td id="gsTiming" class="loading-timing">Loading...</td>
                     </tr>
                     <tr>
                         <td>Paper II</td>
                         <td>CSAT</td>
-                        <td>02:30 PM - 04:30 PM</td>
+                        <td id="csatTiming" class="loading-timing">Loading...</td>
                     </tr>
                 </table>
 
                 <div class="instruction-box">
                     <strong>Important Instructions</strong>
-                    <p>
-                        Please bring a printed copy of this e-Admit Card along with a valid Photo Identity Proof. 
-                        Reach the venue 60 minutes prior to commencement.
-                    </p>
+                    <div class="instructions-list">
+                        <p>Please bring a printed copy of this e-Admit Card along with a valid Photo Identity Proof.</p>
+                        <p>Reach the venue 60 minutes prior to commencement.</p>
+                    </div>
                 </div>
             </div>
 
@@ -395,7 +422,19 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'https://sriram-ias.onrender.com';
+        // 🔍 Auto-detect environment - Support both localhost and 127.0.0.1
+        const hostname = window.location.hostname;
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+        
+        // Check if we should use production or local API
+        const API_BASE_URL = isLocalhost 
+            ? 'http://localhost:5000' 
+            : 'https://sriram-ias.onrender.com';
+        
+        console.log("🌐 Current Host:", hostname);
+        console.log("🌐 Is Local:", isLocalhost);
+        console.log("🌐 Using API:", API_BASE_URL);
+        console.log("💡 Tip: To use production API on localhost, change API_BASE_URL to 'https://sriram-ias.onrender.com'");
         
         // Get email from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -414,16 +453,23 @@
 
                 console.log("📊 USERS DATA:", users);
 
-                // Find logged-in user by email
-                const user = users.data?.find(u => u.email === email);
+                // Find logged-in user by email (case-insensitive)
+                const user = users.data?.find(u => 
+                    u.email.toLowerCase() === email.toLowerCase()
+                );
 
                 if (!user) {
+                    console.log("❌ USER NOT FOUND!");
+                    console.log("📧 Email from URL:", email);
+                    console.log("📧 Looking for (lowercase):", email?.toLowerCase());
+                    console.log("📧 All emails in DB:", users.data?.map(u => u.email));
                     alert("User not found. Please login again.");
                     window.location.href = "index.html";
                     return;
                 }
 
                 console.log("✅ USER FOUND:", user);
+                console.log("📧 Matched email:", user.email);
 
                 // Fill user details
                 studentNameEl.textContent = user.name || 'ANUBHUTI II';
@@ -435,11 +481,16 @@
                 }
 
                 // Update schedule if available
-                if (user.gsPaperSlot) {
-                    console.log("📝 RAW SLOT DATA:", user.gsPaperSlot);
-                    updateSchedule(user.gsPaperSlot);
+                if (user.gsSlot || user.csat) {
+                    console.log("🕒 GS Slot:", user.gsSlot);
+                    console.log("🕒 CSAT Slot:", user.csat);
+                    updateScheduleNew(user.gsSlot, user.csat);
                 } else {
                     console.log("⚠️ No schedule data available");
+                    const gsEl = document.getElementById("gsTiming");
+                    const csatEl = document.getElementById("csatTiming");
+                    if (gsEl) gsEl.textContent = "N/A";
+                    if (csatEl) csatEl.textContent = "N/A";
                 }
 
             } catch (error) {
@@ -453,68 +504,22 @@
             }
         }
 
-        // Parse and update exam schedule
-        function updateSchedule(slot) {
-            console.log("🕒 Parsing slot:", slot);
-            
-            const rows = document.querySelectorAll("table tr");
-            
-            if (rows.length < 3) {
-                console.error("❌ Table rows not found");
-                return;
-            }
+        // Update exam schedule with new separated fields (NO parsing needed)
+        function updateScheduleNew(gsSlot, csat) {
+            console.log("🕒 Updating schedule with GS:", gsSlot, "CSAT:", csat);
 
-            // Split into GS and CSAT parts
-            const parts = slot.split(',');
+            const gsEl = document.getElementById("gsTiming");
+            const csatEl = document.getElementById("csatTiming");
 
-            if (parts.length >= 2) {
-                // 🔥 Clean and extract timings (matching PDF logic)
-                let gsPart = parts[0];
-                let csatPart = parts[1];
+            const format = (time) => {
+                if (!time || time === "N/A") return "N/A";
+                return time.replace(/\s*to\s*/i, " - ");
+            };
 
-                // Remove "Slot X :" prefix
-                gsPart = gsPart.split(':').slice(1).join(':').trim();
-                
-                // Remove subject names
-                gsPart = gsPart.replace('(General Studies)', '').trim();
-                csatPart = csatPart.replace('(CSAT)', '').trim();
+            if (gsEl) gsEl.textContent = format(gsSlot);
+            if (csatEl) csatEl.textContent = format(csat);
 
-                // Format timings (handle AM/PM)
-                const gsTime = formatTiming(gsPart);
-                const csatTime = formatTiming(csatPart);
-
-                console.log("✅ GS Time:", gsTime);
-                console.log("✅ CSAT Time:", csatTime);
-
-                // Apply to table
-                rows[1].children[2].textContent = gsTime;
-                rows[2].children[2].textContent = csatTime;
-            } else {
-                console.error("❌ Invalid slot format - expected 2 parts");
-            }
-        }
-
-        // Helper function to format timing (add missing AM/PM)
-        function formatTiming(time) {
-            if (!time || time === "N/A") return "N/A";
-
-            const parts = time.split('-');
-            
-            if (parts.length !== 2) return time;
-
-            let start = parts[0].trim();
-            let end = parts[1].trim();
-
-            // Check if end already has AM/PM
-            if (!/AM|PM/i.test(end)) {
-                if (/PM/i.test(start)) {
-                    end += " PM";
-                } else if (/AM/i.test(start)) {
-                    end += " AM";
-                }
-            }
-
-            return `${start} - ${end}`;
+            console.log("✅ Schedule updated without flicker");
         }
 
         // Initialize page
@@ -523,7 +528,15 @@
         // Handle download button click
         document.getElementById('downloadBtn').addEventListener('click', () => {
             if (email) {
-                window.open(`${API_BASE_URL}/admit/download?email=${encodeURIComponent(email)}`, '_blank');
+                const downloadEmail = encodeURIComponent(email);
+                const downloadUrl = `${API_BASE_URL}/admit/download?email=${downloadEmail}`;
+                
+                console.log("\n🔵 DOWNLOAD BUTTON CLICKED");
+                console.log("📧 Download email:", email);
+                console.log("🔗 Download URL:", downloadUrl);
+                console.log("🔗 Encoded email:", downloadEmail);
+                
+                window.open(downloadUrl, '_blank');
             } else {
                 alert('Email not found. Please login again.');
                 window.location.href = 'index.html';

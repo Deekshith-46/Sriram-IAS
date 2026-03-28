@@ -4,11 +4,13 @@ const userSchema = new mongoose.Schema({
   name: String,
   phone: String,
   email: String,
-  preferredMode: String,
   city: String,
-  timestamp: String,
-  gsPaperSlot: String
-  // OTP fields removed - no longer needed
+  
+  // New fields for multi-sheet support
+  venue: String,
+  gsSlot: String,        // General Studies slot
+  csat: String,          // CSAT slot
+  examSheet: String      // Sheet name (e.g., "PUNE SLOT 1")
 });
 
 module.exports = mongoose.model("User", userSchema);
