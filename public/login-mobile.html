@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anubhuti II - Examination Portal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Inter:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            height: 70px;
+            background: #d1d5db;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            flex-shrink: 0;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .logo-small {
+            height: 40px;
+        }
+
+        .logo-main {
+            height: 42px;
+        }
+
+        /* MAIN LAYOUT */
+        .container {
+            display: flex;
+            padding: 45px 40px;
+            gap: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        /* LEFT SIDE */
+        .left {
+            flex: 1;
+            padding: 8% 20px 15px 20px;
+        }
+
+        .badge {
+            background: #dc2626;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 56px;
+            color: #0b1b3b;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #c53030;
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .desc {
+            color: #4b5563;
+            max-width: 500px;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* INFO BOXES */
+        .info-box {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .card {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 10px;
+            width: 180px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card p {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card h4 {
+            margin-top: 8px;
+            color: #111827;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* RIGHT SIDE */
+        .right {
+            width: 400px;
+            margin-top: -30px;
+        }
+
+        .form-box {
+            background: #ffffff;
+            padding: 32px 28px;
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            border: 1px solid #e5e7eb;
+        }
+
+        /* FORM STYLES */
+        .form-box h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #0b1b3b;
+        }
+
+        .form-box p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .input {
+            margin-bottom: 20px;
+        }
+
+        .input label {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .input input {
+            width: 100%;
+            padding: 12px 0;
+            font-size: 15px;
+            background: transparent;
+            transition: all 0.3s;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            border-bottom: 1.8px solid #cbd5e1;
+            padding: 8px 0;
+            transition: all 0.3s;
+        }
+
+        .input-wrap .icon {
+            margin-right: 10px;
+            font-size: 15px;
+            opacity: 0.7;
+        }
+
+        .input-wrap input {
+            border: none;
+            outline: none;
+            flex: 1;
+            background: transparent;
+            font-size: 15px;
+        }
+
+        .input-wrap input:focus {
+            outline: none;
+        }
+
+        .input-wrap:focus-within {
+            border-bottom: 2px solid #0b1b3b;
+        }
+
+        .help-text {
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .forgot {
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .assist {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* ERROR MESSAGE */
+        .error {
+            display: none;
+            background: #fde8e8;
+            color: #b91c1c;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            margin: 10px 0 14px;
+            border: 1px solid #fca5a5;
+        }
+
+        .input.error-active .input-wrap {
+            border-bottom: 2px solid #dc2626 !important;
+        }
+
+        /* BUTTON */
+        .btn {
+            width: 100%;
+            background: #0b1b3b;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(11, 27, 59, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .container {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .left {
+                text-align: center;
+                padding: 15px;
+            }
+
+            .title {
+                font-size: 42px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+            }
+
+            .desc {
+                margin: 0 auto;
+                font-size: 13px;
+            }
+
+            .info-box {
+                justify-content: center;
+                gap: 10px;
+            }
+
+            .card {
+                width: 160px;
+                padding: 12px;
+            }
+
+            .right {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                height: 60px;
+                padding: 0 15px;
+            }
+
+            .logo-small {
+                height: 32px;
+            }
+
+            .logo-main {
+                height: 34px;
+            }
+
+            .container {
+                padding: 15px;
+                margin-top: 10px;
+            }
+
+            .left {
+                padding: 10px;
+            }
+
+            .badge {
+                font-size: 10px;
+                padding: 5px 10px;
+            }
+
+            .title {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .desc {
+                font-size: 12px;
+                line-height: 1.6;
+            }
+
+            .info-box {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                margin-top: 20px;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 280px;
+                padding: 12px;
+            }
+
+            .card h4 {
+                font-size: 14px;
+            }
+
+            .right {
+                margin-top: 20px;
+            }
+
+            .form-box {
+                padding: 24px 20px;
+                border-radius: 12px;
+            }
+
+            .form-box h2 {
+                font-size: 24px;
+            }
+
+            .form-box p {
+                font-size: 12px;
+            }
+
+            .input label {
+                font-size: 10px;
+            }
+
+            .input input,
+            .input-wrap input {
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .error {
+                font-size: 11px;
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo-wrap">
+            <img src="logos-40-years.png" alt="40 Years Logo" class="logo-small">
+            <img src="Logo.png" alt="Sriram IAS Logo" class="logo-main">
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- LEFT SIDE -->
+        <div class="left">
+            <h1 class="title">ANUBHUTI II</h1>
+            <p class="subtitle">All India Open Mock Test 2026</p>
+
+            <div class="info-box">
+                <div class="card">
+                    <p>Examination Date</p>
+                    <h4>March 29, 2026</h4>
+                </div>
+                <div class="card">
+                    <p>Status</p>
+                    <h4>Verification Open</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="right">
+            <!-- LOGIN FORM -->
+            <div class="form-box" id="formBox">
+                <h2>FEE – INR 0 (FREE)</h2>
+                <p>Enter your 10-digit mobile number to view your results.</p>
+
+                <form id="loginFormElement">
+                    <div class="input">
+                        <label>Mobile Number</label>
+                        <div class="input-wrap">
+                            <span class="icon">📱</span>
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                placeholder="Registered 10-digit Number"
+                                required
+                                pattern="[0-9]{10}"
+                                maxlength="10"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="error" id="errorBox">
+                        Invalid mobile number. Please check and try again.
+                    </div>
+
+                    <button type="submit" class="btn" id="loginBtn">
+                        View Results →
+                    </button>
+
+                    <div class="help-text">
+                        <p class="assist">🎧 For any Assistance call 9811489560</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect environment
+        const hostname = window.location.hostname;
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+        
+        const API_BASE_URL = isLocalhost 
+            ? 'http://localhost:5000' 
+            : 'https://sriram-ias.onrender.com';
+
+        console.log("🌐 Using API:", API_BASE_URL);
+
+        const loginFormElement = document.getElementById('loginFormElement');
+        const formBox = document.getElementById('formBox');
+        const errorBox = document.getElementById('errorBox');
+        const loginBtn = document.getElementById('loginBtn');
+
+        // Handle login form submission
+        loginFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const phone = document.getElementById('phone').value.trim();
+
+            // Validate phone (10 digits)
+            if (!phone || phone.length !== 10) {
+                showError();
+                return;
+            }
+
+            // Show loading state immediately
+            setLoading(true);
+
+            try {
+                // Add timeout for faster perceived response (increased to 10s)
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(), 10000);  // Increased from 5s to 10s
+
+                // Verify credentials with backend
+                const response = await fetch(`${API_BASE_URL}/auth/verify-login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phone }),
+                    signal: controller.signal
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Login successful - redirect to paper selection
+                    window.location.href = `select-paper.html?phone=${encodeURIComponent(phone)}`;
+                } else {
+                    // Login failed
+                    showError();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError();
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // Show error message
+        function showError() {
+            errorBox.textContent = 'Invalid mobile number. Please check and try again.';
+            errorBox.style.display = 'block';
+            
+            // Add red border to inputs
+            document.querySelectorAll('.input').forEach(el => {
+                el.classList.add('error-active');
+            });
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                hideError();
+            }, 5000);
+        }
+
+        // Hide error message
+        function hideError() {
+            errorBox.style.display = 'none';
+            
+            // Remove red border from inputs
+            document.querySelectorAll('.input').forEach(el => {
+                el.classList.remove('error-active');
+            });
+        }
+
+        // Set loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = 'Verifying... ⏳';
+            } else {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'View Results →';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Paper - Examination Portal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            height: 70px;
+            background: #d1d5db;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            flex-shrink: 0;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logo-small {
+            height: 40px;
+        }
+
+        .logo-main {
+            height: 42px;
+        }
+
+        /* CONTAINER */
+        .container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .select-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .select-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .select-icon {
+            background: #0b1b3b;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: auto;
+        }
+
+        .select-header h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 28px;
+            color: #0b1b3b;
+            margin-top: 15px;
+        }
+
+        .select-header p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        /* PAPER OPTIONS */
+        .paper-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .paper-btn {
+            background: white;
+            border: 2px solid #0b1b3b;
+            color: #0b1b3b;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .paper-btn:hover {
+            background: #0b1b3b;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(11, 27, 59, 0.2);
+        }
+
+        .paper-btn .arrow {
+            font-size: 20px;
+        }
+
+        .paper-btn.gs {
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        .paper-btn.gs:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .paper-btn.csat {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .paper-btn.csat:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #0b1b3b;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .navbar {
+                height: 60px;
+                padding: 0 15px;
+            }
+
+            .logo-small {
+                height: 32px;
+            }
+
+            .logo-main {
+                height: 34px;
+            }
+
+            .select-card {
+                padding: 30px 20px;
+            }
+
+            .select-header h1 {
+                font-size: 24px;
+            }
+
+            .paper-btn {
+                padding: 15px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo-wrap">
+            <img src="logos-40-years.png" alt="40 Years Logo" class="logo-small">
+            <img src="Logo.png" alt="Sriram IAS Logo" class="logo-main">
+        </div>
+    </div>
+
+    <!-- CONTAINER -->
+    <div class="container">
+        <div class="select-card">
+            <div class="select-header">
+                <div class="select-icon">📝</div>
+                <h1>Select Your Paper</h1>
+                <p>Choose which paper's result you want to view</p>
+            </div>
+
+            <div class="paper-options">
+                <button class="paper-btn gs" onclick="selectPaper('gs')">
+                    <span>Paper 1 (General Studies)</span>
+                    <span class="arrow">→</span>
+                </button>
+                
+                <button class="paper-btn csat" onclick="selectPaper('csat')">
+                    <span>Paper 2 (CSAT)</span>
+                    <span class="arrow">→</span>
+                </button>
+            </div>
+
+            <div class="back-link">
+                <a href="login-mobile.html">← Back to Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get phone from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const phone = urlParams.get('phone');
+
+        // Validate phone exists
+        if (!phone) {
+            alert('Please login first');
+            window.location.href = 'login-mobile.html';
+        }
+
+        function selectPaper(type) {
+            // Redirect to result page with phone and paper type
+            window.location.href = `result.html?phone=${encodeURIComponent(phone)}&type=${type}`;
+        }
+    </script>
+</body>
+</html>

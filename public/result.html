@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Details - Examination Portal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            height: 70px;
+            background: #d1d5db;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            flex-shrink: 0;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logo-small {
+            height: 40px;
+        }
+
+        .logo-main {
+            height: 42px;
+        }
+
+        /* CONTAINER */
+        .container {
+            flex: 1;
+            display: flex;
+            align-items: center;     /* vertical center */
+            justify-content: center; /* horizontal center */
+            padding: 20px;
+        }
+
+        /* WRAPPER */
+        .content-wrapper {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 10px;   /* tighter */
+        }
+
+        .icon {
+            background: #0b1b3b;
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: auto;
+        }
+
+        .header h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 30px;
+            color: #0b1b3b;
+            margin-top: 15px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .paper-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .paper-badge.gs {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .paper-badge.csat {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        /* RESULT CARD */
+        .result-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #0b1b3b, #1e3a8a);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .card-header h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 26px;
+            letter-spacing: 1px;
+        }
+
+        .card-body {
+            padding: 22px 20px;   /* reduced */
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 15px 0;
+            font-size: 15px;
+        }
+
+        td:first-child {
+            color: #6b7280;
+            font-weight: 500;
+            width: 40%;
+        }
+
+        td:last-child {
+            color: #111827;
+            font-weight: 600;
+        }
+
+        /* Score Highlight */
+        .score-row td {
+            font-size: 18px;
+            padding: 20px 0;
+        }
+
+        .score-row td:last-child {
+            color: #dc2626;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        /* Error State */
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-block;
+            margin-top: 25px;
+            background: white;
+            color: #0b1b3b;
+            padding: 14px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            border: 2px solid #0b1b3b;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #0b1b3b;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .result-card {
+                max-width: 100%;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                height: 60px;
+                padding: 0 15px;
+            }
+
+            .logo-small {
+                height: 32px;
+            }
+
+            .logo-main {
+                height: 34px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .card-header h2 {
+                font-size: 20px;
+            }
+
+            .card-body {
+                padding: 18px;
+            }
+
+            td {
+                font-size: 14px;
+                padding: 12px 0;
+            }
+
+            .back-btn {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo-wrap">
+            <img src="logos-40-years.png" alt="40 Years Logo" class="logo-small">
+            <img src="Logo.png" alt="Sriram IAS Logo" class="logo-main">
+        </div>
+    </div>
+
+    <!-- CONTAINER -->
+    <div class="container">
+        <div class="content-wrapper">
+        
+            <!-- HEADER -->
+            <div class="header">
+                <div class="icon">📊</div>
+                <h1>Result Details</h1>
+                <p id="loadingText">Loading your result...</p>
+                <span id="paperBadge" class="paper-badge"></span>
+            </div>
+
+            <!-- LOADING STATE -->
+            <div id="loadingState" class="loading">
+                ⏳ Fetching your result...
+            </div>
+
+            <!-- ERROR STATE -->
+            <div id="errorState" class="error" style="display: none;">
+                <strong>Error!</strong>
+                <p id="errorMessage"></p>
+                <a href="select-paper.html" class="back-btn">Go Back</a>
+            </div>
+
+            <!-- RESULT CARD -->
+            <div id="resultCard" class="result-card" style="display: none;">
+            <div class="card-header">
+                <h2 id="studentName">Student Name</h2>
+            </div>
+            <div class="card-body">
+                <table>
+                    <tr>
+                        <td>Centre</td>
+                        <td id="centre">-</td>
+                    </tr>
+                    <tr>
+                        <td>Correct Answers</td>
+                        <td id="correct" style="color: #16a34a;">-</td>
+                    </tr>
+                    <tr>
+                        <td>Incorrect Answers</td>
+                        <td id="incorrect" style="color: #dc2626;">-</td>
+                    </tr>
+                    <tr>
+                        <td>Blank Questions</td>
+                        <td id="blank">-</td>
+                    </tr>
+                    <tr class="score-row">
+                        <td><strong>Total Score</strong></td>
+                        <td><strong id="score">-</strong></td>
+                    </tr>
+                </table>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <a id="backBtn" class="back-btn">
+                        ← Back to Papers
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect environment
+        const hostname = window.location.hostname;
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+        
+        const API_BASE_URL = isLocalhost 
+            ? 'http://localhost:5000' 
+            : 'https://sriram-ias.onrender.com';
+
+        console.log("🌐 Using API:", API_BASE_URL);
+
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const phone = urlParams.get('phone');
+        const type = urlParams.get('type');
+
+        // Validate parameters
+        if (!phone || !type) {
+            showError('Invalid request. Please go back and try again.');
+        } else {
+            // Update paper badge
+            const paperBadge = document.getElementById('paperBadge');
+            if (type === 'gs') {
+                paperBadge.textContent = 'Paper 1 - General Studies';
+                paperBadge.classList.add('gs');
+            } else if (type === 'csat') {
+                paperBadge.textContent = 'Paper 2 - CSAT';
+                paperBadge.classList.add('csat');
+            } else {
+                showError('Invalid paper type selected.');
+            }
+
+            // Fetch result data only if validation passes
+            if (paperBadge && (type === 'gs' || type === 'csat')) {
+                fetchResult();
+            }
+        }
+
+        // Fetch result data function
+        async function fetchResult() {
+            try {
+                const apiUrl = `${API_BASE_URL}/result/${type}?phone=${encodeURIComponent(phone)}`;
+                console.log("📡 API CALL:", apiUrl);
+                console.log("🔍 Searching for phone:", phone);
+                
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("❌ Backend error:", errorData);
+                    throw new Error(errorData.message || 'Failed to fetch result');
+                }
+
+                const data = await response.json();
+                console.log("✅ Data received:", data);
+
+                // Populate data
+                document.getElementById('studentName').textContent = data.name || 'N/A';
+                document.getElementById('centre').textContent = data.centre || 'N/A';
+                document.getElementById('correct').textContent = data.correct || 0;
+                document.getElementById('incorrect').textContent = data.incorrect || 0;
+                document.getElementById('blank').textContent = data.blank || 0;
+                document.getElementById('score').textContent = data.score || 0;
+
+                // Show result card
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('loadingText').style.display = 'none';
+                document.getElementById('resultCard').style.display = 'block';
+
+                // Set back button URL with phone number
+                document.getElementById('backBtn').href = `select-paper.html?phone=${encodeURIComponent(phone)}`;
+
+            } catch (error) {
+                console.error('Error fetching result:', error);
+                showError(error.message);
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('loadingText').style.display = 'none';
+        }
+
+        // Initialize
+    </script>
+</body>
+</html>

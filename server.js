@@ -7,6 +7,7 @@ require("dotenv").config();
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const admitRoutes = require("./routes/admitRoutes");
+const resultRoutes = require("./routes/resultRoutes");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/admin", adminRoutes);
 app.use("/auth", authRoutes);
 app.use("/admit", admitRoutes);
+app.use("/result", resultRoutes);
 
 // Health check route
 app.get("/", (req, res) => {
