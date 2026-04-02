@@ -62,6 +62,20 @@
             gap: 12px;
         }
 
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .logo-small-sidebar {
+            height: 32px;
+        }
+
+        .logo-main-sidebar {
+            height: 36px;
+        }
+
         .logo {
             font-size: 22px;
             font-weight: 700;
@@ -73,12 +87,21 @@
         /* Mobile logout (hidden by default) */
         .logout-mobile {
             display: none;
-            background: transparent;
+            background: rgba(220, 38, 38, 0.9);
             border: none;
             color: white;
-            font-size: 18px;
+            font-size: 12px;
             cursor: pointer;
-            padding: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        .logout-mobile:hover {
+            background: rgba(185, 28, 28, 1);
+            transform: translateY(-1px);
         }
 
         /* Desktop logout */
@@ -360,8 +383,17 @@
                 font-size: 22px;
             }
 
+            .logo-small-sidebar {
+                height: 28px;
+            }
+
+            .logo-main-sidebar {
+                height: 32px;
+            }
+
             .main {
-                padding: 20px 15px;
+                padding: 15px 12px;
+                overflow-x: hidden;
             }
 
             .header-section h1 {
@@ -370,12 +402,14 @@
 
             .header-row {
                 flex-direction: column;
-                gap: 15px;
+                gap: 12px;
             }
 
             .download-btn {
                 width: 100%;
                 justify-content: center;
+                padding: 12px 20px;
+                font-size: 14px;
             }
 
             .charts {
@@ -383,16 +417,19 @@
             }
 
             .chart-box {
-                padding: 20px;
+                padding: 15px;
+                margin-bottom: 12px;
             }
 
             .table-container {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
+                margin-bottom: 15px;
+                border-radius: 12px;
             }
 
             table {
-                min-width: 600px;
+                min-width: 500px;
             }
 
             .menu-title {
@@ -422,6 +459,19 @@
             .menu-toggle {
                 font-size: 20px;
                 padding: 6px;
+            }
+
+            .logout-mobile {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+
+            .logo-small-sidebar {
+                height: 24px;
+            }
+
+            .logo-main-sidebar {
+                height: 28px;
             }
 
             .main {
@@ -487,11 +537,14 @@
                 <div class="top-bar">
                     <div class="left-nav">
                         <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-                        <h2 class="logo">🎓 Sriram IAS</h2>
+                        <div class="logo-wrapper">
+                            <img src="logos-40-years.png" alt="40 Years" class="logo-small-sidebar">
+                            <img src="Logo.png" alt="Sriram IAS" class="logo-main-sidebar">
+                        </div>
                     </div>
 
                     <!-- ✅ Mobile Logout (hidden on desktop) -->
-                    <button class="logout-mobile" onclick="logout()">🚪</button>
+                    <button class="logout-mobile" onclick="logout()">Logout</button>
                 </div>
                 
                 <div class="menu" id="sidebarMenu">
@@ -518,7 +571,7 @@
             <div class="header-section">
                 <div class="header-row">
                     <div>
-                        <h1>Test Results History</h1>
+                        <h1>Marks Summary</h1>
                         <p id="studentInfo">Loading student information...</p>
                     </div>
 
@@ -967,7 +1020,7 @@
 
             tbody.innerHTML = `
                 <tr>
-                    <td><strong>${currentPaper === 'gs' ? 'Paper 1 - GS' : 'Paper 2 - CSAT'}</strong></td>
+                    <td><strong>${currentPaper === 'gs' ? 'Paper 1 : GS' : 'Paper 2 : CSAT'}</strong></td>
                     <td>${data.centre}</td>
                     <td class="green">${data.correct}</td>
                     <td class="red">${data.incorrect}</td>
