@@ -529,8 +529,8 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Login successful - redirect to paper selection
-                    window.location.href = `select-paper.html?phone=${encodeURIComponent(phone)}`;
+                    // Login successful - redirect to dashboard
+                    window.location.href = `dashboard.html?phone=${encodeURIComponent(phone)}`;
                 } else {
                     // Login failed
                     showError();

@@ -230,6 +230,14 @@
             <div class="back-link">
                 <a href="login-mobile.html">← Back to Login</a>
             </div>
+
+            <!-- DASHBOARD LINK -->
+            <div style="text-align: center; margin-top: 20px;">
+                <a id="dashboardLink" href="#" 
+                   style="color: #1e40af; text-decoration: none; font-weight: 600; font-size: 15px;">
+                    📊 View Full Dashboard
+                </a>
+            </div>
         </div>
     </div>
 
@@ -248,6 +256,14 @@
             // Redirect to result page with phone and paper type
             window.location.href = `result.html?phone=${encodeURIComponent(phone)}&type=${type}`;
         }
+
+        // Update dashboard link dynamically
+        document.addEventListener('DOMContentLoaded', () => {
+            const dashboardLink = document.getElementById('dashboardLink');
+            if (dashboardLink) {
+                dashboardLink.href = `dashboard.html?phone=${encodeURIComponent(phone)}`;
+            }
+        });
     </script>
 </body>
 </html>
