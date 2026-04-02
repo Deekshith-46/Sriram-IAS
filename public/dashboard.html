@@ -533,6 +533,20 @@
                 ⏳ Loading your results...
             </div>
 
+            <!-- NO RESULTS STATE (hidden initially) -->
+            <div id="noResultsState" style="display: none; text-align: center; padding: 60px 20px;">
+                <div style="font-size: 64px; margin-bottom: 20px;">📄</div>
+                <h2 style="font-size: 24px; color: #0f172a; margin-bottom: 10px;">No Results Found</h2>
+                <p style="color: #6b7280; font-size: 16px; margin-bottom: 30px;">
+                    This paper result is not available for your account.
+                </p>
+                <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; max-width: 400px; margin: 0 auto;">
+                    <p style="color: #475569; font-size: 14px; margin: 0;">
+                        <strong>Note:</strong> If you believe this is an error, please contact support.
+                    </p>
+                </div>
+            </div>
+
             <!-- DASHBOARD CONTENT (hidden initially) -->
             <div id="dashboardContent" style="display: none;">
                 <!-- CHARTS -->
@@ -679,12 +693,67 @@
         let csatData = null;
         let trendChartInstance = null;
         let pieChartInstance = null;
+        let hasGsData = false;
+        let hasCsatData = false;
 
         // Initialize dashboard
         async function initDashboard() {
             try {
-                // Try to load both papers
-                await loadPaper('gs');
+                // Check GS availability (without triggering error UI)
+                const gsResponse = await fetch(`${API_BASE_URL}/result/gs?phone=${encodeURIComponent(phone)}`);
+                
+                if (gsResponse.ok) {
+                    const data = await gsResponse.json();
+                    gsData = data;
+                    hasGsData = true;
+                } else {
+                    hasGsData = false;
+                }
+
+                // Check CSAT availability (without triggering error UI)
+                const csatResponse = await fetch(`${API_BASE_URL}/result/csat?phone=${encodeURIComponent(phone)}`);
+                
+                if (csatResponse.ok) {
+                    const data = await csatResponse.json();
+                    csatData = data;
+                    hasCsatData = true;
+                } else {
+                    hasCsatData = false;
+                    
+                    // Disable CSAT button if not available
+                    const csatBtn = document.getElementById('csatBtn');
+                    if (csatBtn) {
+                        csatBtn.disabled = true;
+                        csatBtn.style.opacity = '0.5';
+                        csatBtn.style.cursor = 'not-allowed';
+                        csatBtn.title = "No CSAT result available";
+                    }
+                }
+                
+                // Disable GS button if not available
+                if (!hasGsData) {
+                    const gsBtn = document.getElementById('gsBtn');
+                    if (gsBtn) {
+                        gsBtn.disabled = true;
+                        gsBtn.style.opacity = '0.5';
+                        gsBtn.style.cursor = 'not-allowed';
+                        gsBtn.title = "No GS result available";
+                    }
+                }
+                
+                // Load first available paper
+                if (hasGsData) {
+                    await loadPaper('gs');
+                } else if (hasCsatData) {
+                    await loadPaper('csat');
+                } else {
+                    // No papers available - show no results state
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'none';
+                    document.getElementById('noResultsState').style.display = 'block';
+                    document.getElementById('studentInfo').textContent = 'No results available';
+                }
+                
             } catch (error) {
                 console.error('Error initializing:', error);
             }
@@ -698,32 +767,72 @@
                 const response = await fetch(`${API_BASE_URL}/result/${type}?phone=${encodeURIComponent(phone)}`);
                 
                 if (!response.ok) {
-                    throw new Error(`Failed to load ${type} data`);
+                    // Paper not found for this user
+                    console.log(`❌ ${type.toUpperCase()} not found`);
+                    
+                    if (type === 'gs') {
+                        hasGsData = false;
+                        const gsBtn = document.getElementById('gsBtn');
+                        if (gsBtn) {
+                            gsBtn.disabled = true;
+                            gsBtn.style.opacity = '0.5';
+                            gsBtn.style.cursor = 'not-allowed';
+                        }
+                    } else {
+                        hasCsatData = false;
+                        const csatBtn = document.getElementById('csatBtn');
+                        if (csatBtn) {
+                            csatBtn.disabled = true;
+                            csatBtn.style.opacity = '0.5';
+                            csatBtn.style.cursor = 'not-allowed';
+                        }
+                    }
+                    
+                    // Always show no results state when clicking unavailable paper
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'none';
+                    document.getElementById('noResultsState').style.display = 'block';
+                    
+                    // Update header to show which paper is missing
+                    document.getElementById('studentInfo').textContent = 
+                        `No results available for ${type.toUpperCase()}`;
+                    
+                    return;
                 }
 
                 const data = await response.json();
                 console.log(`✅ ${type.toUpperCase()} data loaded:`, data);
 
-                // Store data
+                // Mark as available and store data
                 if (type === 'gs') {
                     gsData = data;
-                    document.getElementById('gsBtn').classList.add('active');
+                    hasGsData = true;
+                    const gsBtn = document.getElementById('gsBtn');
+                    if (gsBtn) {
+                        gsBtn.disabled = false;
+                        gsBtn.style.opacity = '1';
+                        gsBtn.style.cursor = 'pointer';
+                        gsBtn.classList.add('active');
+                    }
                     document.getElementById('csatBtn').classList.remove('active');
                 } else {
                     csatData = data;
-                    document.getElementById('csatBtn').classList.add('active');
+                    hasCsatData = true;
+                    const csatBtn = document.getElementById('csatBtn');
+                    if (csatBtn) {
+                        csatBtn.disabled = false;
+                        csatBtn.style.opacity = '1';
+                        csatBtn.style.cursor = 'pointer';
+                        csatBtn.classList.add('active');
+                    }
                     document.getElementById('gsBtn').classList.remove('active');
                 }
 
                 currentPaper = type;
 
-                // Close mobile menu after selection
-                if (window.innerWidth <= 768) {
-                    document.getElementById('sidebarMenu').classList.remove('show');
-                }
-
-                // Hide loading, show dashboard
+                // Hide loading and no results states, show dashboard
                 document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('noResultsState').style.display = 'none';
                 document.getElementById('dashboardContent').style.display = 'block';
 
                 // Update student info
@@ -736,10 +845,19 @@
 
             } catch (error) {
                 console.error(`❌ Error loading ${type}:`, error);
-                // If GS fails, try CSAT
-                if (type === 'gs' && !csatData) {
-                    await loadPaper('csat');
+                
+                // Handle 404 errors properly - show no results state
+                if (error.message.includes('Failed to load')) {
+                    // This is a 404 error, already handled above
+                    return;
                 }
+                
+                // For other errors (network issues, etc.)
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'none';
+                document.getElementById('noResultsState').style.display = 'block';
+                document.getElementById('studentInfo').textContent = 
+                    `Error loading ${type.toUpperCase()} results`;
             }
         }
 
@@ -862,7 +980,12 @@
         // Download PDF (separate template with real data only - FIXED)
         function downloadPDF() {
             let data = currentPaper === 'gs' ? gsData : csatData;
-            if (!data) return;
+            
+            // Don't allow download if no data
+            if (!data) {
+                alert('No results available to download');
+                return;
+            }
 
             // Fill PDF template with REAL data only
             document.getElementById('pdfStudent').textContent = 
