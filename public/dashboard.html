@@ -626,7 +626,7 @@
                                 <th>Incorrect</th>
                                 <th>Blank</th>
                                 <th>Score</th>
-                                <th id="lastColHeader">Rank</th>
+                                <th id="lastColHeader">All India Rank</th>
                             </tr>
                         </thead>
                         <tbody id="resultBody">
@@ -708,7 +708,7 @@
                 text-align:center;
                 display:none;
             ">
-                <div id="pdfRankLabel" style="font-size:13px; opacity:0.95; margin-bottom:5px; font-weight:600;">RANK</div>
+                <div id="pdfRankLabel" style="font-size:13px; opacity:0.95; margin-bottom:5px; font-weight:600;">ALL INDIA RANK</div>
                 <div id="pdfRank" style="font-size:36px; font-weight:700;"></div>
             </div>
         </div>
@@ -724,7 +724,7 @@
             <h3 style="font-size:18px; color:#0f172a; margin-bottom:10px;">Performance Summary</h3>
             <p style="color:#6b7280; font-size:14px; line-height:1.6;">
                 <strong>Current Score:</strong> <span id="pdfScore2" style="color:#0b1b3b; font-weight:600;"></span><br/>
-                <strong id="pdfRankOrStatusLabel">Rank:</strong> <span id="pdfRankSummary" style="color:#0b1b3b; font-weight:600;">Not Available</span><br/>
+                <strong id="pdfRankOrStatusLabel">All India Rank:</strong> <span id="pdfRankSummary" style="color:#0b1b3b; font-weight:600;">Not Available</span><br/>
                 <strong>Accuracy:</strong> Calculated based on attempted questions<br/>
                 <strong>Paper Type:</strong> <span id="pdfPaperType"></span>
             </p>
@@ -1046,7 +1046,7 @@
             document.getElementById('csatQualifyInfo').style.display = currentPaper === 'csat' ? 'block' : 'none';
 
             // Update last column header
-            document.getElementById('lastColHeader').textContent = currentPaper === 'gs' ? 'Rank' : 'Status';
+            document.getElementById('lastColHeader').textContent = currentPaper === 'gs' ? 'All India Rank' : 'Status';
 
             let rankDisplay = '';
             if (currentPaper === 'gs') {
@@ -1101,7 +1101,7 @@
             document.getElementById('pdfScore').textContent = data.score;
             document.getElementById('pdfScore2').textContent = data.score;
 
-            document.getElementById('pdfRankOrStatusLabel').textContent = currentPaper === 'gs' ? 'Rank:' : 'Status:';
+            document.getElementById('pdfRankOrStatusLabel').textContent = currentPaper === 'gs' ? 'All India Rank:' : 'Status:';
 
             const pdfRankSection = document.getElementById('pdfRankSection');
             const pdfRank = document.getElementById('pdfRank');
@@ -1111,7 +1111,7 @@
             if (currentPaper === 'gs' && data.rank && data.totalStudents) {
                 pdfRankSection.style.display = 'block';
                 pdfRankSection.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-                pdfRankLabel.textContent = 'RANK';
+                pdfRankLabel.textContent = 'ALL INDIA RANK';
                 pdfRank.textContent = `${data.rank} / ${data.totalStudents}`;
                 pdfRankSummary.textContent = `${data.rank} out of ${data.totalStudents} students`;
             } else if (currentPaper === 'csat' && data.status) {
