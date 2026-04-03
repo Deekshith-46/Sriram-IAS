@@ -8,6 +8,7 @@ const resultSchema = new mongoose.Schema({
   incorrect: Number,
   blank: Number,
   score: Number,
+  rank: Number,  // 🆕 NEW FIELD for GS only
   timestamp: { type: Date, default: Date.now }
 });
 

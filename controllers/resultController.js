@@ -27,8 +27,16 @@ exports.getGS = async (req, res) => {
       return res.status(404).json({ message: "GS result not found" });
     }
 
+    // 🆕 Get total count of GS students
+    const totalCount = await ResultGS.countDocuments({});
+    
     console.log("✅ [GS] Found user:", user.name, "| Mobile:", user.mobile);
-    res.json(user);
+    
+    // Add total count to response
+    res.json({
+      ...user,
+      totalStudents: totalCount
+    });
   } catch (error) {
     console.error("❌ [GS] Error:", error);
     res.status(500).json({ 
@@ -65,7 +73,14 @@ exports.getCSAT = async (req, res) => {
     }
 
     console.log("✅ [CSAT] Found user:", user.name, "| Mobile:", user.mobile);
-    res.json(user);
+    
+    // Determine CSAT qualification status
+    const qualified = user.score >= 66.67;
+    
+    res.json({
+      ...user,
+      status: qualified ? 'Qualified' : 'Not Qualified'
+    });
   } catch (error) {
     console.error("❌ [CSAT] Error:", error);
     res.status(500).json({ 

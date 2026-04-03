@@ -626,6 +626,7 @@
                                 <th>Incorrect</th>
                                 <th>Blank</th>
                                 <th>Score</th>
+                                <th id="lastColHeader">Rank</th>
                             </tr>
                         </thead>
                         <tbody id="resultBody">
@@ -634,7 +635,14 @@
                     </table>
                 </div>
 
-                <!-- DOWNLOAD BUTTON (removed from here - now in header) -->
+                <!-- CSAT QUALIFICATION INFO (shown only for CSAT) -->
+                <div id="csatQualifyInfo" style="display:none; background:#fff; border-radius:14px; padding:18px 22px; box-shadow:0 4px 20px rgba(0,0,0,0.07); border-left:5px solid #2563eb; margin-bottom:20px;">
+                    <div style="font-size:14px; font-weight:600; color:#1e3a8a; margin-bottom:8px;">📋 CSAT Qualification Criteria</div>
+                    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                        <span style="background:#f0fdf4; color:#16a34a; font-weight:700; padding:6px 16px; border-radius:20px; font-size:14px;">✅ Qualified &nbsp;— Score ≥ 66.67</span>
+                        <span style="background:#fef2f2; color:#dc2626; font-weight:700; padding:6px 16px; border-radius:20px; font-size:14px;">❌ Not Qualified — Score &lt; 66.67</span>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -689,6 +697,20 @@
                 <div style="font-size:14px; opacity:0.9; margin-bottom:5px;">TOTAL SCORE</div>
                 <div id="pdfScore" style="font-size:42px; font-weight:700;"></div>
             </div>
+
+            <!-- RANK SECTION (GS only) -->
+            <div id="pdfRankSection" style="
+                background:linear-gradient(135deg, #fbbf24, #f59e0b);
+                color:white;
+                padding:15px;
+                border-radius:12px;
+                margin-top:15px;
+                text-align:center;
+                display:none;
+            ">
+                <div id="pdfRankLabel" style="font-size:13px; opacity:0.95; margin-bottom:5px; font-weight:600;">RANK</div>
+                <div id="pdfRank" style="font-size:36px; font-weight:700;"></div>
+            </div>
         </div>
 
         <!-- PERFORMANCE SUMMARY -->
@@ -702,6 +724,7 @@
             <h3 style="font-size:18px; color:#0f172a; margin-bottom:10px;">Performance Summary</h3>
             <p style="color:#6b7280; font-size:14px; line-height:1.6;">
                 <strong>Current Score:</strong> <span id="pdfScore2" style="color:#0b1b3b; font-weight:600;"></span><br/>
+                <strong id="pdfRankOrStatusLabel">Rank:</strong> <span id="pdfRankSummary" style="color:#0b1b3b; font-weight:600;">Not Available</span><br/>
                 <strong>Accuracy:</strong> Calculated based on attempted questions<br/>
                 <strong>Paper Type:</strong> <span id="pdfPaperType"></span>
             </p>
@@ -1018,6 +1041,23 @@
 
             if (!data) return;
 
+            // Calculate total students for GS paper only
+            // Show CSAT qualification info only for CSAT
+            document.getElementById('csatQualifyInfo').style.display = currentPaper === 'csat' ? 'block' : 'none';
+
+            // Update last column header
+            document.getElementById('lastColHeader').textContent = currentPaper === 'gs' ? 'Rank' : 'Status';
+
+            let rankDisplay = '';
+            if (currentPaper === 'gs') {
+                rankDisplay = (data.rank && data.totalStudents)
+                    ? `<td class="score">${data.rank}/${data.totalStudents}</td>`
+                    : '<td style="text-align:center;">-</td>';
+            } else {
+                const isQualified = data.status === 'Qualified';
+                rankDisplay = `<td class="${isQualified ? 'green' : 'red'}">${data.status || '-'}</td>`;
+            }
+
             tbody.innerHTML = `
                 <tr>
                     <td><strong>${currentPaper === 'gs' ? 'Paper 1 : General Studies' : 'Paper 2 : CSAT'}</strong></td>
@@ -1026,6 +1066,7 @@
                     <td class="red">${data.incorrect}</td>
                     <td>${data.blank}</td>
                     <td class="score">${data.score}</td>
+                    ${rankDisplay}
                 </tr>
             `;
         }
@@ -1059,6 +1100,33 @@
             
             document.getElementById('pdfScore').textContent = data.score;
             document.getElementById('pdfScore2').textContent = data.score;
+
+            document.getElementById('pdfRankOrStatusLabel').textContent = currentPaper === 'gs' ? 'Rank:' : 'Status:';
+
+            const pdfRankSection = document.getElementById('pdfRankSection');
+            const pdfRank = document.getElementById('pdfRank');
+            const pdfRankSummary = document.getElementById('pdfRankSummary');
+            const pdfRankLabel = document.getElementById('pdfRankLabel');
+
+            if (currentPaper === 'gs' && data.rank && data.totalStudents) {
+                pdfRankSection.style.display = 'block';
+                pdfRankSection.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+                pdfRankLabel.textContent = 'RANK';
+                pdfRank.textContent = `${data.rank} / ${data.totalStudents}`;
+                pdfRankSummary.textContent = `${data.rank} out of ${data.totalStudents} students`;
+            } else if (currentPaper === 'csat' && data.status) {
+                pdfRankSection.style.display = 'block';
+                const isQualified = data.status === 'Qualified';
+                pdfRankSection.style.background = isQualified
+                    ? 'linear-gradient(135deg, #16a34a, #15803d)'
+                    : 'linear-gradient(135deg, #dc2626, #b91c1c)';
+                pdfRankLabel.textContent = 'STATUS';
+                pdfRank.textContent = data.status;
+                pdfRankSummary.textContent = data.status;
+            } else {
+                pdfRankSection.style.display = 'none';
+                pdfRankSummary.textContent = 'Not Available';
+            }
 
             // Generate PDF from SEPARATE template
             const element = document.getElementById('pdfTemplate');

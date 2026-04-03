@@ -68,6 +68,7 @@ async function uploadResultExcel(file, Model, typeName, res) {
       console.log(`\n📊 Row ${index} - Normalized Keys:`, Object.keys(cleanRow));
       console.log(`   Mobile field value: "${cleanRow['mobno'] || cleanRow['mobile'] || cleanRow['phone']}"`);
       console.log(`   Name field value: "${cleanRow['name'] || cleanRow['candidateName']}"`);
+      console.log(`   Rank field value: "${cleanRow['rank'] || 'N/A'}"`);
     }
 
     return {
@@ -103,7 +104,8 @@ async function uploadResultExcel(file, Model, typeName, res) {
       correct: parseInt(cleanRow["correct"] || 0),
       incorrect: parseInt(cleanRow["incorrect"] || 0),
       blank: parseInt(cleanRow["blank"] || 0),
-      score: parseFloat(cleanRow["score"] || 0)
+      score: parseFloat(cleanRow["score"] || 0),
+      rank: parseInt(cleanRow["rank"] || null)  // 🆕 NEW: Handle Rank field (GS only)
     };
   });
 

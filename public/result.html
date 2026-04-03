@@ -361,7 +361,21 @@
                         <td><strong>Total Score</strong></td>
                         <td><strong id="score">-</strong></td>
                     </tr>
+                    <!-- CSAT Status Row (hidden for GS) -->
+                    <tr id="statusRow" style="display:none;">
+                        <td><strong>Status</strong></td>
+                        <td id="csatStatus">-</td>
+                    </tr>
                 </table>
+
+                <!-- CSAT Qualification Info Box -->
+                <div id="csatQualifyInfo" style="display:none; background:#f8fafc; border-radius:10px; padding:14px 16px; border-left:4px solid #2563eb; margin-top:18px; text-align:left;">
+                    <div style="font-size:13px; font-weight:600; color:#1e3a8a; margin-bottom:8px;">📋 CSAT Qualification Criteria</div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <span style="background:#f0fdf4; color:#16a34a; font-weight:700; padding:5px 14px; border-radius:20px; font-size:13px;">✅ Qualified — Score ≥ 66.67</span>
+                        <span style="background:#fef2f2; color:#dc2626; font-weight:700; padding:5px 14px; border-radius:20px; font-size:13px;">❌ Not Qualified — Score &lt; 66.67</span>
+                    </div>
+                </div>
 
                 <div style="text-align: center; margin-top: 15px;">
                     <a id="backBtn" class="back-btn">
