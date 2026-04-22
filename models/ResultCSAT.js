@@ -8,6 +8,9 @@ const resultSchema = new mongoose.Schema({
   incorrect: Number,
   blank: Number,
   score: Number,
+  rank: Number,  // Rank field for CSAT
+  mode: String,  // Online/Offline
+  sheetName: String,  // Track which sheet this came from
   timestamp: { type: Date, default: Date.now }
 });
 

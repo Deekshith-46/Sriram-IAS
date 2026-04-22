@@ -6,21 +6,13 @@ const ResultCSAT = require("../models/ResultCSAT");
 exports.uploadExcel = async (req, res) => {
   try {
     const file = req.file;
-    const { type } = req.body; // 'user' for admit card, 'gs' for GS result, 'csat' for CSAT result
 
     if (!file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // Route to appropriate handler based on type
-    if (type === 'gs') {
-      return await uploadResultExcel(file, ResultGS, 'GS', res);
-    } else if (type === 'csat') {
-      return await uploadResultExcel(file, ResultCSAT, 'CSAT', res);
-    } else {
-      // Default: Upload admit card data (existing logic)
-      return await uploadAdmitCardExcel(file, res);
-    }
+    // Always use multi-sheet handler (auto-detects GS and CSAT sheets)
+    return await uploadResultMultiSheet(file, res);
 
   } catch (err) {
     res.status(500).json({ 
@@ -30,12 +22,26 @@ exports.uploadExcel = async (req, res) => {
   }
 };
 
-// Helper function to upload result Excel (GS or CSAT)
-async function uploadResultExcel(file, Model, typeName, res) {
+// Helper function to upload multi-sheet result Excel (GS & CSAT together)
+async function uploadResultMultiSheet(file, res) {
   const workbook = xlsx.readFile(file.path);
   
-  let allData = [];
+  console.log("\n📊 Excel file loaded. Sheets found:", workbook.SheetNames);
   
+  // Define sheet name mappings
+  const gsSheets = ['NEW DELHI GS', 'PUNE GS', 'HYDERABAD GS', 'GS ONLINE'];
+  const csatSheets = ['NEW DELHI CSAT', 'PUNE CSAT', 'HYDERABAD CSAT', 'CSAT ONLINE'];
+  
+  // Arrays to store data for each sheet
+  const sheetData = {
+    gs: { 'NEW DELHI GS': [], 'PUNE GS': [], 'HYDERABAD GS': [], 'GS ONLINE': [] },
+    csat: { 'NEW DELHI CSAT': [], 'PUNE CSAT': [], 'HYDERABAD CSAT': [], 'CSAT ONLINE': [] }
+  };
+  
+  let totalRowsProcessed = 0;
+  let totalRowsSkipped = 0;
+  
+  // Process each sheet
   workbook.SheetNames.forEach((sheetName) => {
     const sheet = workbook.Sheets[sheetName];
     
@@ -45,93 +51,204 @@ async function uploadResultExcel(file, Model, typeName, res) {
       range: 0
     });
     
-    const enrichedData = data.map(row => ({
-      ...row,
-      sheetName
-    }));
+    console.log(`\n📄 Processing sheet: "${sheetName}" - ${data.length} rows`);
     
-    allData.push(...enrichedData);
-  });
-
-  const results = allData.map((row, index) => {
-    const normalizeKey = (key) =>
-      key.toLowerCase().replace(/[^a-z0-9]/g, "");
+    // Normalize sheet name for matching
+    const normalizedSheetName = sheetName.trim().toUpperCase();
     
-    const cleanRow = {};
-    Object.keys(row).forEach((key) => {
-      const normalized = normalizeKey(key);
-      cleanRow[normalized] = row[key];
-    });
-
-    // Debug: Log first few rows to see what we're getting
-    if (index < 3) {
-      console.log(`\n📊 Row ${index} - Normalized Keys:`, Object.keys(cleanRow));
-      console.log(`   Mobile field value: "${cleanRow['mobno'] || cleanRow['mobile'] || cleanRow['phone']}"`);
-      console.log(`   Name field value: "${cleanRow['name'] || cleanRow['candidateName']}"`);
-      console.log(`   Rank field value: "${cleanRow['rank'] || 'N/A'}"`);
+    // Determine if this is GS or CSAT sheet
+    let targetCollection = null;
+    let targetSheetName = null;
+    
+    if (gsSheets.includes(normalizedSheetName)) {
+      targetCollection = 'gs';
+      targetSheetName = normalizedSheetName;
+    } else if (csatSheets.includes(normalizedSheetName)) {
+      targetCollection = 'csat';
+      targetSheetName = normalizedSheetName;
+    } else {
+      console.log(`⚠️  Skipping unknown sheet: "${sheetName}"`);
+      return;
     }
-
-    return {
-      mobile: String(
-        cleanRow["mobile"] || 
-        cleanRow["phone"] || 
+    
+    // Process each row in the sheet
+    data.forEach((row, index) => {
+      const normalizeKey = (key) =>
+        key.toLowerCase().replace(/[^a-z0-9]/g, "");
+      
+      const cleanRow = {};
+      Object.keys(row).forEach((key) => {
+        const normalized = normalizeKey(key);
+        cleanRow[normalized] = row[key];
+      });
+      
+      // Extract mobile number
+      const mobile = String(
         cleanRow["mobno"] || 
         cleanRow["mobileno"] || 
-        cleanRow["mobno."] ||   // Handle "Mob No."
+        cleanRow["mobile"] || 
+        cleanRow["phone"] || 
         cleanRow["phonenumber"] || 
         cleanRow["phoneno"] || 
-        cleanRow["phoneno."] ||
         ""
       )
-      .replace(/\D/g, "")   // 🔥 REMOVE ALL NON-DIGIT CHARACTERS (spaces, dots, dashes)
-      .trim(),
-      name: (
-        cleanRow["name"] || 
-        cleanRow["candidateName"] || 
-        cleanRow["candidatename"] || 
-        cleanRow["studentname"] || 
-        cleanRow["studentName"] ||
-        ""
-      ).trim(),
-      centre: (
-        cleanRow["centre"] || 
-        cleanRow["center"] || 
-        cleanRow["examcentre"] || 
-        cleanRow["examcenter"] || 
-        cleanRow["examCentre"] ||
-        ""
-      ).trim(),
-      correct: parseInt(cleanRow["correct"] || 0),
-      incorrect: parseInt(cleanRow["incorrect"] || 0),
-      blank: parseInt(cleanRow["blank"] || 0),
-      score: parseFloat(cleanRow["score"] || 0),
-      rank: parseInt(cleanRow["rank"] || null)  // 🆕 NEW: Handle Rank field (GS only)
-    };
-  });
-
-  // Filter and log
-  const validResults = results.filter(r => r.mobile);
-  console.log(`\n✅ Total rows processed: ${results.length}`);
-  console.log(`✅ Rows with valid mobile: ${validResults.length}`);
-  console.log(`✅ Rows filtered out (no mobile): ${results.length - validResults.length}`);
-
-  const operations = validResults.map(result => ({
-      updateOne: {
-        filter: { mobile: result.mobile },
-        update: { $set: result },
-        upsert: true
+      .replace(/\D/g, "")
+      .trim();
+      
+      // Skip rows without mobile number
+      if (!mobile) {
+        totalRowsSkipped++;
+        return;
       }
-    }));
-
-  const result = await Model.bulkWrite(operations);
-
+      
+      totalRowsProcessed++;
+      
+      // Check if this sheet has "Centre" field (offline sheets) or not (online sheets)
+      const hasCentre = normalizedSheetName.includes('ONLINE') ? false : true;
+      
+      const resultData = {
+        mobile: mobile,
+        name: (
+          cleanRow["candidatename"] || 
+          cleanRow["name"] || 
+          cleanRow["studentname"] || 
+          ""
+        ).trim(),
+        correct: parseInt(cleanRow["correct"] || 0),
+        incorrect: parseInt(cleanRow["incorrect"] || 0),
+        blank: parseInt(cleanRow["blank"] || 0),
+        score: parseFloat(cleanRow["score"] || 0),
+        rank: parseInt(cleanRow["rank"] || 0) || null,
+        mode: (cleanRow["mode"] || "").trim(),
+        sheetName: sheetName.trim()  // Store original sheet name
+      };
+      
+      // Debug: Log first row of each sheet to verify rank field
+      if (index === 0) {
+        console.log(`   📊 First row sample - Rank field: "${cleanRow['rank'] || 'NOT FOUND'}" | Parsed: ${resultData.rank}`);
+      }
+      
+      // Add centre only for offline sheets
+      if (hasCentre) {
+        resultData.centre = (
+          cleanRow["centre"] || 
+          cleanRow["center"] || 
+          ""
+        ).trim();
+      }
+      
+      // Store in appropriate array
+      sheetData[targetCollection][targetSheetName].push(resultData);
+    });
+  });
+  
+  console.log("\n" + "=".repeat(60));
+  console.log("📊 FINAL STATISTICS");
+  console.log("=".repeat(60));
+  console.log(`Total rows processed: ${totalRowsProcessed}`);
+  console.log(`Total rows skipped (no mobile): ${totalRowsSkipped}`);
+  console.log("=".repeat(60) + "\n");
+  
+  // Build detailed sheet statistics
+  const gsSheetStats = {};
+  const csatSheetStats = {};
+  
+  // Re-upload GS sheets and capture individual stats
+  let gsTotalInserted = 0;
+  let gsTotalUpdated = 0;
+  
+  for (const [sheetName, records] of Object.entries(sheetData.gs)) {
+    if (records.length > 0) {
+      console.log(`📤 Uploading ${records.length} records to GS collection - Sheet: "${sheetName}"`);
+      
+      const operations = records.map(result => ({
+        updateOne: {
+          filter: { mobile: result.mobile, sheetName: result.sheetName },
+          update: { $set: result },
+          upsert: true
+        }
+      }));
+      
+      const result = await ResultGS.bulkWrite(operations);
+      
+      gsSheetStats[sheetName] = {
+        totalRecords: records.length,
+        inserted: result.upsertedCount,
+        updated: result.modifiedCount
+      };
+      
+      gsTotalInserted += result.upsertedCount;
+      gsTotalUpdated += result.modifiedCount;
+      
+      console.log(`   ✅ Inserted: ${result.upsertedCount}, Updated: ${result.modifiedCount}\n`);
+    }
+  }
+  
+  // Re-upload CSAT sheets and capture individual stats
+  let csatTotalInserted = 0;
+  let csatTotalUpdated = 0;
+  
+  for (const [sheetName, records] of Object.entries(sheetData.csat)) {
+    if (records.length > 0) {
+      console.log(`📤 Uploading ${records.length} records to CSAT collection - Sheet: "${sheetName}"`);
+      
+      const operations = records.map(result => ({
+        updateOne: {
+          filter: { mobile: result.mobile, sheetName: result.sheetName },
+          update: { $set: result },
+          upsert: true
+        }
+      }));
+      
+      const result = await ResultCSAT.bulkWrite(operations);
+      
+      csatSheetStats[sheetName] = {
+        totalRecords: records.length,
+        inserted: result.upsertedCount,
+        updated: result.modifiedCount
+      };
+      
+      csatTotalInserted += result.upsertedCount;
+      csatTotalUpdated += result.modifiedCount;
+      
+      console.log(`   ✅ Inserted: ${result.upsertedCount}, Updated: ${result.modifiedCount}\n`);
+    }
+  }
+  
+  console.log("=".repeat(60));
+  console.log("📊 DETAILED SHEET STATISTICS");
+  console.log("=".repeat(60));
+  
+  console.log("\n📗 GS SHEETS:");
+  for (const [sheetName, stats] of Object.entries(gsSheetStats)) {
+    console.log(`   ${sheetName}: ${stats.totalRecords} rows | Inserted: ${stats.inserted} | Updated: ${stats.updated}`);
+  }
+  console.log(`   GS TOTAL: Inserted: ${gsTotalInserted} | Updated: ${gsTotalUpdated}\n`);
+  
+  console.log("📘 CSAT SHEETS:");
+  for (const [sheetName, stats] of Object.entries(csatSheetStats)) {
+    console.log(`   ${sheetName}: ${stats.totalRecords} rows | Inserted: ${stats.inserted} | Updated: ${stats.updated}`);
+  }
+  console.log(`   CSAT TOTAL: Inserted: ${csatTotalInserted} | Updated: ${csatTotalUpdated}\n`);
+  console.log("=".repeat(60) + "\n");
+  
   res.json({
-    message: `${typeName} result upload processed successfully 🚀`,
-    totalSheets: workbook.SheetNames.length,
+    message: "Multi-sheet result upload completed successfully 🚀",
     sheetsProcessed: workbook.SheetNames,
-    totalRows: allData.length,
-    inserted: result.upsertedCount,
-    updated: result.modifiedCount
+    totalRowsProcessed: totalRowsProcessed,
+    totalRowsSkipped: totalRowsSkipped,
+    gs: {
+      totalInserted: gsTotalInserted,
+      totalUpdated: gsTotalUpdated,
+      totalRecords: gsTotalInserted + gsTotalUpdated,
+      sheets: gsSheetStats
+    },
+    csat: {
+      totalInserted: csatTotalInserted,
+      totalUpdated: csatTotalUpdated,
+      totalRecords: csatTotalInserted + csatTotalUpdated,
+      sheets: csatSheetStats
+    }
   });
 }
 
@@ -222,33 +339,6 @@ async function uploadAdmitCardExcel(file, res) {
       updated: result.modifiedCount
     });
 }
-
-exports.uploadExcel = async (req, res) => {
-  try {
-    const file = req.file;
-    const { type } = req.body; // 'user' for admit card, 'gs' for GS result, 'csat' for CSAT result
-
-    if (!file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    // Route to appropriate handler based on type
-    if (type === 'gs') {
-      return await uploadResultExcel(file, ResultGS, 'GS', res);
-    } else if (type === 'csat') {
-      return await uploadResultExcel(file, ResultCSAT, 'CSAT', res);
-    } else {
-      // Default: Upload admit card data (existing logic)
-      return await uploadAdmitCardExcel(file, res);
-    }
-
-  } catch (err) {
-    res.status(500).json({ 
-      message: "Upload failed", 
-      error: err.message 
-    });
-  }
-};
 
 exports.getAllUsers = async (req, res) => {
   try {
